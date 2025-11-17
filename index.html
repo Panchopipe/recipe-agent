@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Recipe Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .config-section h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .config-section p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .api-help {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .api-help strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #856404;
+        }
+        
+        .api-help ol {
+            margin-left: 20px;
+            color: #856404;
+        }
+        
+        .api-help a {
+            color: #0056b3;
+            text-decoration: none;
+        }
+        
+        .api-help a:hover {
+            text-decoration: underline;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        input[type="password"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="password"]:focus,
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-section {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .result-section.visible {
+            display: block;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .result-header h3 {
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .copy-btn {
+            background: #28a745;
+            padding: 8px 20px;
+            font-size: 14px;
+            width: auto;
+        }
+        
+        .copy-btn:hover {
+            background: #218838;
+        }
+        
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #17a2b8;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 30px;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👨🏻‍🍳 YouTube Recipe Agent</h1>
+            <p>Transform YouTube cooking transcripts into Obsidian-ready recipes</p>
+        </div>
+        
+        <div class="content">
+            <div class="config-section">
+                <h3>⚙️ Configuration</h3>
+                <p>Enter your Anthropic API key below. Your key is stored only in your browser's session and is never sent anywhere except directly to Anthropic's API.</p>
+                <div class="input-group">
+                    <label for="apiKey">Anthropic API Key:</label>
+                    <input type="password" id="apiKey" placeholder="sk-ant-api03-...">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showKey" onchange="toggleKeyVisibility()">
+                        <label for="showKey">Show API key</label>
+                    </div>
+                </div>
+                
+                <div class="api-help">
+                    <strong>🔑 Don't have an API key?</strong>
+                    <ol>
+                        <li>Go to <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></li>
+                        <li>Sign up or log in</li>
+                        <li>Navigate to "API Keys" in the sidebar</li>
+                        <li>Click "Create Key" and copy it</li>
+                        <li>Paste it above</li>
+                    </ol>
+                    <p style="margin-top: 10px;"><strong>Privacy:</strong> Your API key is stored in your browser's sessionStorage (cleared when you close the tab) and only sent directly to Anthropic. This tool doesn't have a backend server.</p>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <strong>📝 How to use:</strong>
+                <ol style="margin: 10px 0 0 20px;">
+                    <li>Get your Anthropic API key (see instructions above)</li>
+                    <li>Go to a YouTube cooking video</li>
+                    <li>Copy the transcript from <a href="https://youtubetotranscript.com/" target="_blank">youtubetotranscript.com</a></li>
+                    <li>Paste it below and click "Generate Recipe"</li>
+                    <li>Copy the markdown output directly into your Obsidian vault!</li>
+                </ol>
+            </div>
+            
+            <div class="input-group">
+                <label for="transcript">YouTube Video Transcript:</label>
+                <textarea id="transcript" rows="12" placeholder="Paste the full transcript here..."></textarea>
+            </div>
+            
+            <button id="generateBtn" onclick="generateRecipe()">Generate Recipe</button>
+            
+            <div id="loading" class="loading" style="display: none;">
+                ⏳ Claude is creating your recipe...
+            </div>
+            
+            <div id="error" class="error" style="display: none;"></div>
+            
+            <div id="resultSection" class="result-section">
+                <div class="result-header">
+                    <h3>📄 Your Recipe (Markdown)</h3>
+                    <button class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+                </div>
+                <div id="result" class="result-box"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Made with ❤️ using Claude API | <a href="https://github.com/yourusername/youtube-recipe-agent" target="_blank">View on GitHub</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Load API key from sessionStorage on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = sessionStorage.getItem('anthropic_api_key');
+            if (savedKey) {
+                document.getElementById('apiKey').value = savedKey;
+            }
+        });
+        
+        function toggleKeyVisibility() {
+            const keyInput = document.getElementById('apiKey');
+            const checkbox = document.getElementById('showKey');
+            keyInput.type = checkbox.checked ? 'text' : 'password';
+        }
+        
+        async function generateRecipe() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const transcript = document.getElementById('transcript').value.trim();
+            
+            // Clear previous results
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('resultSection').classList.remove('visible');
+            
+            // Validation
+            if (!apiKey) {
+                showError('Please enter your Anthropic API key. See instructions above for how to get one.');
+                return;
+            }
+            
+            if (!transcript) {
+                showError('Please paste a YouTube transcript.');
+                return;
+            }
+            
+            // Save API key to sessionStorage (cleared when browser closes)
+            sessionStorage.setItem('anthropic_api_key', apiKey);
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('generateBtn').disabled = true;
+            
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 4000,
+                        messages: [{
+                            role: 'user',
+                            content: `You are a recipe extraction expert. I will provide you with a YouTube video transcript from a cooking video. Your task is to extract and format the recipe in markdown format suitable for Obsidian.
+
+Follow this EXACT format:
+
+# [Recipe Name]
+For [X servings/portions]
+## Ingredients
+**Prep Time:** [X minutes]
+**Cook Time:** [X minutes]
+- [ingredient with measurements and weight in grams if mentioned]
+- [ingredient with measurements]
+(Continue for all ingredients)
+
+## Directions
+1. [First step in detail]
+2. [Second step in detail]
+(Continue for all steps, numbered)
+
+If you find any personal notes, tips, or variations mentioned in the video, add them as additional numbered steps at the end with "Personal Note:" prefix.
+
+Important guidelines for measurements:
+- ALWAYS convert pounds (lbs) to grams (g): 1 lb = 454g
+- ALWAYS convert ounces (oz) to grams (g): 1 oz = 28g
+- ALWAYS convert fluid ounces (fl oz) to milliliters (ml): 1 fl oz = 30ml
+- ALWAYS convert inches to centimeters (cm): 1 inch = 2.54cm
+- KEEP cups, tablespoons (Tbsp), and teaspoons (tsp) as-is - do NOT convert these
+- When a recipe provides both cups AND grams (e.g., "2 cups (300g) flour"), keep both measurements
+- Always prioritize metric measurements (grams, milliliters, centimeters) over imperial
+- Format: "2 cups (300g) all-purpose flour" or "454g chicken breast"
+
+Important guidelines for content:
+- Extract prep time and cook time from the transcript if mentioned
+- Write clear, detailed step-by-step instructions
+- If tips or recommendations are mentioned in the directions, integrate them naturally into the step description (e.g., "Whisk until smooth; it's ok if there are a few lumps")
+- Keep the friendly, instructional tone
+- If serving size isn't mentioned, make a reasonable estimate based on ingredients
+- Use markdown formatting exactly as shown
+
+Here's the transcript:
+
+${transcript}`
+                        }]
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || `API Error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const recipe = data.content[0].text;
+                
+                // Show result
+                document.getElementById('result').textContent = recipe;
+                document.getElementById('resultSection').classList.add('visible');
+                
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('generateBtn').disabled = false;
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function copyToClipboard() {
+            const result = document.getElementById('result').textContent;
+            navigator.clipboard.writeText(result).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+        
+        // Allow Enter key in textarea (Ctrl+Enter to submit)
+        document.getElementById('transcript').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                generateRecipe();
+            }
+        });
+    </script>
+</body>
+</html>
