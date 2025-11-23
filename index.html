@@ -479,8 +479,8 @@
             document.getElementById('languageManual').value = language;
         }
         
-        function getLanguageInstructions(languageCode) {
-            const languageMap = {
+        function getLanguageMap() {
+            return {
                 'english': 'English',
                 'spanish': 'Spanish',
                 'portuguese': 'Portuguese',
@@ -491,29 +491,12 @@
                 'arabic': 'Arabic',
                 'hindi': 'Hindi'
             };
-            
-            const language = languageMap[languageCode] || 'English';
-            
-            if (languageCode === 'english') {
-                return ''; // No special instruction needed for English
-            }
-            
-            return `
-
-CRITICAL LANGUAGE REQUIREMENT:
-You MUST write the ENTIRE recipe in ${language}. This is NON-NEGOTIABLE.
-
-Translate EVERYTHING to ${language}:
-- Recipe title (e.g., "Pancakes" → "Panqueques" for Spanish)
-- Section headers: "Ingredients" → translate to ${language}, "Directions" → translate to ${language}
-- Every single ingredient name
-- Every single cooking instruction
-- ALL text, descriptions, and notes
-- Keep "Prep Time" and "Cook Time" labels in ${language}
-
-Use natural, native phrasing that a native ${language} speaker would use when cooking.
-Do NOT mix English with ${language} - the recipe must be 100% in ${language}.
-The only exception: you may keep measurement abbreviations like "g", "ml", "cm" as they are universal.`;
+        }
+        
+        function getLanguageInstructions(languageCode) {
+            // This function is now deprecated - keeping for backward compatibility
+            // Language instructions are now added at the TOP of the prompt
+            return '';
         }
         
         function toggleKeyVisibility(inputId, checkboxId) {
