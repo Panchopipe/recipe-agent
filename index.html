@@ -482,14 +482,14 @@
         function getLanguageInstructions(languageCode) {
             const languageMap = {
                 'english': 'English',
-                'spanish': 'Spanish (Español)',
-                'portuguese': 'Portuguese (Português)',
-                'french': 'French (Français)',
-                'german': 'German (Deutsch)',
-                'japanese': 'Japanese (日本語)',
-                'chinese': 'Chinese (中文, Simplified)',
-                'arabic': 'Arabic (العربية)',
-                'hindi': 'Hindi (हिन्दी)'
+                'spanish': 'Spanish',
+                'portuguese': 'Portuguese',
+                'french': 'French',
+                'german': 'German',
+                'japanese': 'Japanese',
+                'chinese': 'Simplified Chinese',
+                'arabic': 'Arabic',
+                'hindi': 'Hindi'
             };
             
             const language = languageMap[languageCode] || 'English';
@@ -498,15 +498,22 @@
                 return ''; // No special instruction needed for English
             }
             
-            return `\n\nIMPORTANT: Generate the ENTIRE recipe in ${language}. This includes:
-- The recipe title
-- Section headers (Ingredients, Directions)
-- ALL ingredient names and descriptions
-- ALL cooking instructions and steps
-- ALL measurements and units
-- Any personal notes or tips
+            return `
 
-Use natural, native phrasing that a native speaker would use. Do not mix languages - everything should be in ${language}.`;
+CRITICAL LANGUAGE REQUIREMENT:
+You MUST write the ENTIRE recipe in ${language}. This is NON-NEGOTIABLE.
+
+Translate EVERYTHING to ${language}:
+- Recipe title (e.g., "Pancakes" → "Panqueques" for Spanish)
+- Section headers: "Ingredients" → translate to ${language}, "Directions" → translate to ${language}
+- Every single ingredient name
+- Every single cooking instruction
+- ALL text, descriptions, and notes
+- Keep "Prep Time" and "Cook Time" labels in ${language}
+
+Use natural, native phrasing that a native ${language} speaker would use when cooking.
+Do NOT mix English with ${language} - the recipe must be 100% in ${language}.
+The only exception: you may keep measurement abbreviations like "g", "ml", "cm" as they are universal.`;
         }
         
         function toggleKeyVisibility(inputId, checkboxId) {
@@ -739,6 +746,9 @@ Use natural, native phrasing that a native speaker would use. Do not mix languag
 
         async function generateRecipe(transcript, anthropicKey, language) {
             const languageInstructions = getLanguageInstructions(language);
+            
+            console.log('Selected language:', language);
+            console.log('Language instructions:', languageInstructions);
             
             // Replace this with YOUR Cloudflare Worker URL
             const response = await fetch('https://recipe-agent-proxy.francisco-diazmo.workers.dev', {
