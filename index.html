@@ -119,11 +119,25 @@
             transition: border-color 0.3s;
         }
         
-        input[type="password"]:focus,
-        input[type="text"]:focus,
-        textarea:focus {
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus {
             outline: none;
             border-color: #667eea;
+        }
+        
+        select option {
+            padding: 10px;
         }
         
         textarea {
@@ -381,6 +395,20 @@
                     <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
                     <div class="url-example">Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ</div>
                 </div>
+                <div class="input-group">
+                    <label for="languageUrl">Recipe Language:</label>
+                    <select id="languageUrl" onchange="saveLanguagePreference('languageUrl')">
+                        <option value="english">🇬🇧 English</option>
+                        <option value="spanish">🇪🇸 Español</option>
+                        <option value="portuguese">🇵🇹 Português</option>
+                        <option value="french">🇫🇷 Français</option>
+                        <option value="german">🇩🇪 Deutsch</option>
+                        <option value="japanese">🇯🇵 日本語</option>
+                        <option value="chinese">🇨🇳 中文</option>
+                        <option value="arabic">🇸🇦 العربية</option>
+                        <option value="hindi">🇮🇳 हिन्दी</option>
+                    </select>
+                </div>
                 <button id="generateFromUrlBtn" onclick="generateFromUrl()">Fetch Transcript & Generate Recipe</button>
             </div>
 
@@ -389,6 +417,20 @@
                 <div class="input-group">
                     <label for="transcript">YouTube Video Transcript:</label>
                     <textarea id="transcript" rows="12" placeholder="Paste the full transcript here..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="languageManual">Recipe Language:</label>
+                    <select id="languageManual" onchange="saveLanguagePreference('languageManual')">
+                        <option value="english">🇬🇧 English</option>
+                        <option value="spanish">🇪🇸 Español</option>
+                        <option value="portuguese">🇵🇹 Português</option>
+                        <option value="french">🇫🇷 Français</option>
+                        <option value="german">🇩🇪 Deutsch</option>
+                        <option value="japanese">🇯🇵 日本語</option>
+                        <option value="chinese">🇨🇳 中文</option>
+                        <option value="arabic">🇸🇦 العربية</option>
+                        <option value="hindi">🇮🇳 हिन्दी</option>
+                    </select>
                 </div>
                 <button id="generateFromTextBtn" onclick="generateFromTranscript()">Generate Recipe from Transcript</button>
             </div>
@@ -418,10 +460,54 @@
         window.addEventListener('DOMContentLoaded', () => {
             const anthropicKey = sessionStorage.getItem('anthropic_api_key');
             const rapidApiKey = sessionStorage.getItem('rapidapi_key');
+            const savedLanguage = sessionStorage.getItem('preferred_language') || 'english';
             
             if (anthropicKey) document.getElementById('anthropicKey').value = anthropicKey;
             if (rapidApiKey) document.getElementById('rapidApiKey').value = rapidApiKey;
+            
+            // Set saved language preference for both dropdowns
+            document.getElementById('languageUrl').value = savedLanguage;
+            document.getElementById('languageManual').value = savedLanguage;
         });
+        
+        function saveLanguagePreference(selectId) {
+            const language = document.getElementById(selectId).value;
+            sessionStorage.setItem('preferred_language', language);
+            
+            // Sync both dropdowns
+            document.getElementById('languageUrl').value = language;
+            document.getElementById('languageManual').value = language;
+        }
+        
+        function getLanguageInstructions(languageCode) {
+            const languageMap = {
+                'english': 'English',
+                'spanish': 'Spanish (Español)',
+                'portuguese': 'Portuguese (Português)',
+                'french': 'French (Français)',
+                'german': 'German (Deutsch)',
+                'japanese': 'Japanese (日本語)',
+                'chinese': 'Chinese (中文, Simplified)',
+                'arabic': 'Arabic (العربية)',
+                'hindi': 'Hindi (हिन्दी)'
+            };
+            
+            const language = languageMap[languageCode] || 'English';
+            
+            if (languageCode === 'english') {
+                return ''; // No special instruction needed for English
+            }
+            
+            return `\n\nIMPORTANT: Generate the ENTIRE recipe in ${language}. This includes:
+- The recipe title
+- Section headers (Ingredients, Directions)
+- ALL ingredient names and descriptions
+- ALL cooking instructions and steps
+- ALL measurements and units
+- Any personal notes or tips
+
+Use natural, native phrasing that a native speaker would use. Do not mix languages - everything should be in ${language}.`;
+        }
         
         function toggleKeyVisibility(inputId, checkboxId) {
             const input = document.getElementById(inputId);
@@ -559,6 +645,7 @@
             const anthropicKey = document.getElementById('anthropicKey').value.trim();
             const rapidApiKey = document.getElementById('rapidApiKey').value.trim();
             const youtubeUrl = document.getElementById('youtubeUrl').value.trim();
+            const language = document.getElementById('languageUrl').value;
             
             clearResults();
             
@@ -604,7 +691,7 @@
 
                 // Step 2: Generate recipe from transcript
                 document.getElementById('loading').textContent = '⏳ Claude is creating your recipe...';
-                await generateRecipe(transcript, anthropicKey);
+                await generateRecipe(transcript, anthropicKey, language);
                 
             } catch (error) {
                 showError(`Error: ${error.message}`);
@@ -617,6 +704,7 @@
         async function generateFromTranscript() {
             const anthropicKey = document.getElementById('anthropicKey').value.trim();
             const transcript = document.getElementById('transcript').value.trim();
+            const language = document.getElementById('languageManual').value;
             
             clearResults();
             
@@ -640,7 +728,7 @@
             document.getElementById('generateFromTextBtn').disabled = true;
             
             try {
-                await generateRecipe(transcript, anthropicKey);
+                await generateRecipe(transcript, anthropicKey, language);
             } catch (error) {
                 showError(`Error: ${error.message}`);
             } finally {
@@ -649,7 +737,9 @@
             }
         }
 
-        async function generateRecipe(transcript, anthropicKey) {
+        async function generateRecipe(transcript, anthropicKey, language) {
+            const languageInstructions = getLanguageInstructions(language);
+            
             // Replace this with YOUR Cloudflare Worker URL
             const response = await fetch('https://recipe-agent-proxy.francisco-diazmo.workers.dev', {
                 method: 'POST',
