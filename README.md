@@ -2,7 +2,7 @@
 
 Transform YouTube cooking videos into clean, Obsidian-ready markdown recipes.
 
-**Live Demo:** [https://panchopipe.github.io/youtube-recipe-agent/](https://panchopipe.github.io/youtube-recipe-agent/)
+**Live Demo:** [https://panchopipe.github.io/recipe-agent/](https://panchopipe.github.io/recipe-agent/)
 
 ---
 
