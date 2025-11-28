@@ -48,55 +48,69 @@
             padding: 30px;
         }
         
-        .config-section {
-            background: #f8f9fa;
-            padding: 20px;
+        /* Login Section */
+        .login-section {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .login-section h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        
+        .login-section p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        
+        .login-section .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .login-section input {
+            text-align: center;
+        }
+        
+        /* Main App Section */
+        .app-section {
+            display: none;
+        }
+        
+        .app-section.visible {
+            display: block;
+        }
+        
+        .welcome-bar {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px 20px;
             border-radius: 8px;
             margin-bottom: 25px;
-            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
         }
         
-        .config-section h3 {
-            margin-bottom: 10px;
-            color: #333;
-            font-size: 16px;
+        .welcome-bar button {
+            background: transparent;
+            color: #155724;
+            border: 1px solid #155724;
+            padding: 6px 12px;
+            font-size: 12px;
+            width: auto;
+            border-radius: 4px;
         }
         
-        .config-section p {
-            color: #666;
-            font-size: 13px;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-        
-        .api-help {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        
-        .api-help strong {
-            display: block;
-            margin-bottom: 8px;
-            color: #856404;
-        }
-        
-        .api-help ol {
-            margin-left: 20px;
-            color: #856404;
-        }
-        
-        .api-help a {
-            color: #0056b3;
-            text-decoration: none;
-        }
-        
-        .api-help a:hover {
-            text-decoration: underline;
+        .welcome-bar button:hover {
+            background: #155724;
+            color: white;
+            transform: none;
+            box-shadow: none;
         }
         
         label {
@@ -105,6 +119,7 @@
             font-weight: 600;
             color: #333;
             font-size: 14px;
+            text-align: left;
         }
         
         input[type="password"],
@@ -157,25 +172,6 @@
             margin-bottom: 20px;
         }
         
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-            cursor: pointer;
-        }
-        
-        .checkbox-group label {
-            margin: 0;
-            font-weight: normal;
-            cursor: pointer;
-            font-size: 13px;
-        }
-        
         .tabs {
             display: flex;
             gap: 10px;
@@ -193,10 +189,13 @@
             font-weight: 600;
             color: #666;
             transition: all 0.3s;
+            width: auto;
         }
         
         .tab:hover {
             color: #667eea;
+            transform: none;
+            box-shadow: none;
         }
         
         .tab.active {
@@ -346,118 +345,102 @@
         </div>
         
         <div class="content">
-            <div class="config-section">
-                <h3>⚙️ API Configuration</h3>
-                <p>Enter your API keys below. They are stored only in your browser's session and never sent anywhere except to their respective APIs.</p>
+            <!-- Login Section -->
+            <div id="loginSection" class="login-section">
+                <h2>🔐 Enter Access Password</h2>
+                <p>This tool is password protected. Enter the password to continue.</p>
                 
                 <div class="input-group">
-                    <label for="anthropicKey">Anthropic API Key:</label>
-                    <input type="password" id="anthropicKey" placeholder="sk-ant-api03-...">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="showAnthropicKey" onchange="toggleKeyVisibility('anthropicKey', 'showAnthropicKey')">
-                        <label for="showAnthropicKey">Show key</label>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label for="rapidApiKey">RapidAPI Key (for YouTube transcripts):</label>
-                    <input type="password" id="rapidApiKey" placeholder="Your RapidAPI key...">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="showRapidKey" onchange="toggleKeyVisibility('rapidApiKey', 'showRapidKey')">
-                        <label for="showRapidKey">Show key</label>
-                    </div>
+                    <input type="password" id="accessPassword" placeholder="Enter password..." onkeydown="handlePasswordKeydown(event)">
                 </div>
                 
-                <div class="api-help">
-                    <strong>🔑 How to get API keys:</strong>
-                    <p><strong>Anthropic API:</strong></p>
-                    <ol>
-                        <li>Go to <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></li>
-                        <li>Sign up/login → API Keys → Create Key</li>
-                    </ol>
-                    <p style="margin-top: 10px;"><strong>RapidAPI Key:</strong></p>
-                    <ol>
-                        <li>Go to <a href="https://rapidapi.com" target="_blank">rapidapi.com</a></li>
-                        <li>Sign up → Search "YouTube Transcript"</li>
-                        <li>Subscribe to free plan → Copy your API key</li>
-                    </ol>
-                </div>
+                <button id="loginBtn" onclick="validatePassword()">Continue</button>
+                
+                <div id="loginError" class="error" style="display: none; margin-top: 15px;"></div>
             </div>
             
-            <div class="info-box">
-                <strong>✨ Features:</strong>
-                <ul style="margin: 8px 0 0 20px;">
-                    <li>Automatic transcript fetching from YouTube</li>
-                    <li>Recipe translation to 9 languages</li>
-                    <li>Obsidian-ready markdown format</li>
-                </ul>
-            </div>
+            <!-- Main App Section (hidden until authenticated) -->
+            <div id="appSection" class="app-section">
+                <div class="welcome-bar">
+                    <span>✅ Authenticated</span>
+                    <button onclick="logout()">Logout</button>
+                </div>
+                
+                <div class="info-box">
+                    <strong>✨ Features:</strong>
+                    <ul style="margin: 8px 0 0 20px;">
+                        <li>Automatic transcript fetching from YouTube</li>
+                        <li>Recipe translation to 9 languages</li>
+                        <li>Obsidian-ready markdown format</li>
+                    </ul>
+                </div>
 
-            <!-- Tabs for input method -->
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('url')">YouTube URL (Auto)</button>
-                <button class="tab" onclick="switchTab('manual')">Manual Transcript</button>
-            </div>
+                <!-- Tabs for input method -->
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab(event, 'url')">YouTube URL (Auto)</button>
+                    <button class="tab" onclick="switchTab(event, 'manual')">Manual Transcript</button>
+                </div>
 
-            <!-- URL Input Tab -->
-            <div id="urlTab" class="tab-content active">
-                <div class="input-group">
-                    <label for="youtubeUrl">YouTube Video URL:</label>
-                    <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
-                    <div class="url-example">Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ</div>
+                <!-- URL Input Tab -->
+                <div id="urlTab" class="tab-content active">
+                    <div class="input-group">
+                        <label for="youtubeUrl">YouTube Video URL:</label>
+                        <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+                        <div class="url-example">Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="languageUrl">Recipe Language:</label>
+                        <select id="languageUrl" onchange="saveLanguagePreference('languageUrl')">
+                            <option value="english">🇬🇧 English</option>
+                            <option value="spanish">🇪🇸 Español</option>
+                            <option value="portuguese">🇵🇹 Português</option>
+                            <option value="french">🇫🇷 Français</option>
+                            <option value="german">🇩🇪 Deutsch</option>
+                            <option value="japanese">🇯🇵 日本語</option>
+                            <option value="chinese">🇨🇳 中文</option>
+                            <option value="arabic">🇸🇦 العربية</option>
+                            <option value="hindi">🇮🇳 हिन्दी</option>
+                        </select>
+                    </div>
+                    <button id="generateFromUrlBtn" onclick="generateFromUrl()">Generate Recipe</button>
                 </div>
-                <div class="input-group">
-                    <label for="languageUrl">Recipe Language:</label>
-                    <select id="languageUrl" onchange="saveLanguagePreference('languageUrl')">
-                        <option value="english">🇬🇧 English</option>
-                        <option value="spanish">🇪🇸 Español</option>
-                        <option value="portuguese">🇵🇹 Português</option>
-                        <option value="french">🇫🇷 Français</option>
-                        <option value="german">🇩🇪 Deutsch</option>
-                        <option value="japanese">🇯🇵 日本語</option>
-                        <option value="chinese">🇨🇳 中文</option>
-                        <option value="arabic">🇸🇦 العربية</option>
-                        <option value="hindi">🇮🇳 हिन्दी</option>
-                    </select>
-                </div>
-                <button id="generateFromUrlBtn" onclick="generateFromUrl()">Fetch Transcript & Generate Recipe</button>
-            </div>
 
-            <!-- Manual Transcript Tab -->
-            <div id="manualTab" class="tab-content">
-                <div class="input-group">
-                    <label for="transcript">YouTube Video Transcript:</label>
-                    <textarea id="transcript" rows="12" placeholder="Paste the full transcript here..."></textarea>
+                <!-- Manual Transcript Tab -->
+                <div id="manualTab" class="tab-content">
+                    <div class="input-group">
+                        <label for="transcript">YouTube Video Transcript:</label>
+                        <textarea id="transcript" rows="12" placeholder="Paste the full transcript here..."></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="languageManual">Recipe Language:</label>
+                        <select id="languageManual" onchange="saveLanguagePreference('languageManual')">
+                            <option value="english">🇬🇧 English</option>
+                            <option value="spanish">🇪🇸 Español</option>
+                            <option value="portuguese">🇵🇹 Português</option>
+                            <option value="french">🇫🇷 Français</option>
+                            <option value="german">🇩🇪 Deutsch</option>
+                            <option value="japanese">🇯🇵 日本語</option>
+                            <option value="chinese">🇨🇳 中文</option>
+                            <option value="arabic">🇸🇦 العربية</option>
+                            <option value="hindi">🇮🇳 हिन्दी</option>
+                        </select>
+                    </div>
+                    <button id="generateFromTextBtn" onclick="generateFromTranscript()">Generate Recipe from Transcript</button>
                 </div>
-                <div class="input-group">
-                    <label for="languageManual">Recipe Language:</label>
-                    <select id="languageManual" onchange="saveLanguagePreference('languageManual')">
-                        <option value="english">🇬🇧 English</option>
-                        <option value="spanish">🇪🇸 Español</option>
-                        <option value="portuguese">🇵🇹 Português</option>
-                        <option value="french">🇫🇷 Français</option>
-                        <option value="german">🇩🇪 Deutsch</option>
-                        <option value="japanese">🇯🇵 日本語</option>
-                        <option value="chinese">🇨🇳 中文</option>
-                        <option value="arabic">🇸🇦 العربية</option>
-                        <option value="hindi">🇮🇳 हिन्दी</option>
-                    </select>
+                
+                <div id="loading" class="loading" style="display: none;">
+                    ⏳ Processing your request...
                 </div>
-                <button id="generateFromTextBtn" onclick="generateFromTranscript()">Generate Recipe from Transcript</button>
-            </div>
-            
-            <div id="loading" class="loading" style="display: none;">
-                ⏳ Processing your request...
-            </div>
-            
-            <div id="error" class="error" style="display: none;"></div>
-            
-            <div id="resultSection" class="result-section">
-                <div class="result-header">
-                    <h3>📄 Your Recipe (Markdown)</h3>
-                    <button class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+                
+                <div id="error" class="error" style="display: none;"></div>
+                
+                <div id="resultSection" class="result-section">
+                    <div class="result-header">
+                        <h3>📄 Your Recipe (Markdown)</h3>
+                        <button class="copy-btn" onclick="copyToClipboard(event)">Copy to Clipboard</button>
+                    </div>
+                    <div id="result" class="result-box"></div>
                 </div>
-                <div id="result" class="result-box"></div>
             </div>
         </div>
         
@@ -468,23 +451,100 @@
 
     <script>
         // ============================================
-        // CONFIGURATION - UPDATE THIS WITH YOUR URL
+        // CONFIGURATION
         // ============================================
         const WORKER_URL = 'https://recipe-agent-proxy.francisco-diazmo.workers.dev';
         
-        // Load saved preferences
+        // ============================================
+        // INITIALIZATION
+        // ============================================
         window.addEventListener('DOMContentLoaded', () => {
-            const anthropicKey = sessionStorage.getItem('anthropic_api_key');
-            const rapidApiKey = sessionStorage.getItem('rapidapi_key');
+            // Check if already authenticated
+            const storedPassword = sessionStorage.getItem('access_password');
+            if (storedPassword) {
+                showApp();
+            }
+            
+            // Restore language preference
             const savedLanguage = sessionStorage.getItem('preferred_language') || 'english';
-            
-            if (anthropicKey) document.getElementById('anthropicKey').value = anthropicKey;
-            if (rapidApiKey) document.getElementById('rapidApiKey').value = rapidApiKey;
-            
             document.getElementById('languageUrl').value = savedLanguage;
             document.getElementById('languageManual').value = savedLanguage;
         });
         
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
+        function handlePasswordKeydown(event) {
+            if (event.key === 'Enter') {
+                validatePassword();
+            }
+        }
+        
+        async function validatePassword() {
+            const password = document.getElementById('accessPassword').value.trim();
+            const loginError = document.getElementById('loginError');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            loginError.style.display = 'none';
+            
+            if (!password) {
+                loginError.textContent = 'Please enter a password.';
+                loginError.style.display = 'block';
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Validating...';
+            
+            try {
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'validate-password',
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.valid) {
+                    // Store password in session for subsequent requests
+                    sessionStorage.setItem('access_password', password);
+                    showApp();
+                } else {
+                    loginError.textContent = data.error || 'Invalid password. Please try again.';
+                    loginError.style.display = 'block';
+                }
+            } catch (error) {
+                loginError.textContent = `Connection error: ${error.message}`;
+                loginError.style.display = 'block';
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Continue';
+            }
+        }
+        
+        function showApp() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('appSection').classList.add('visible');
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('access_password');
+            document.getElementById('appSection').classList.remove('visible');
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('accessPassword').value = '';
+            clearResults();
+        }
+        
+        function getPassword() {
+            return sessionStorage.getItem('access_password');
+        }
+        
+        // ============================================
+        // UI UTILITIES
+        // ============================================
         function saveLanguagePreference(selectId) {
             const language = document.getElementById(selectId).value;
             sessionStorage.setItem('preferred_language', language);
@@ -507,14 +567,8 @@
                 'hindi': 'Hindi'
             };
         }
-        
-        function toggleKeyVisibility(inputId, checkboxId) {
-            const input = document.getElementById(inputId);
-            const checkbox = document.getElementById(checkboxId);
-            input.type = checkbox.checked ? 'text' : 'password';
-        }
 
-        function switchTab(tabName) {
+        function switchTab(event, tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
             
@@ -533,6 +587,27 @@
             document.getElementById('resultSection').classList.remove('visible');
         }
 
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function copyToClipboard(event) {
+            const result = document.getElementById('result').textContent;
+            navigator.clipboard.writeText(result).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // ============================================
+        // VIDEO ID EXTRACTION
+        // ============================================
         function extractVideoId(url) {
             const patterns = [
                 /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
@@ -547,89 +622,15 @@
             return null;
         }
 
-        function parseSRT(srtContent) {
-            const lines = srtContent.split('\n');
-            const textLines = [];
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                
-                if (line === '' || 
-                    /^\d+$/.test(line) || 
-                    /^\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}$/.test(line)) {
-                    continue;
-                }
-                
-                textLines.push(line);
-            }
-            
-            return textLines.join(' ');
-        }
-
-        async function fetchTranscript(videoId, rapidApiKey) {
-            const response = await fetch(
-                `https://youtube-captions-transcript-subtitles-video-combiner.p.rapidapi.com/download-all/${videoId}?format_subtitle=srt&format_answer=json`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'X-RapidAPI-Key': rapidApiKey,
-                        'x-rapidapi-host': 'youtube-captions-transcript-subtitles-video-combiner.p.rapidapi.com'
-                    }
-                }
-            );
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to fetch transcript: ${response.status} - ${errorText}`);
-            }
-
-            const data = await response.json();
-            
-            if (!data) {
-                throw new Error('No data received from transcript API');
-            }
-
-            let srtContent = '';
-            
-            if (Array.isArray(data) && data.length > 0) {
-                const firstSubtitle = data[0];
-                srtContent = firstSubtitle.subtitle || firstSubtitle.text || '';
-            } else if (data.subtitle) {
-                srtContent = data.subtitle;
-            } else if (typeof data === 'string') {
-                srtContent = data;
-            }
-
-            if (!srtContent || srtContent.trim().length === 0) {
-                throw new Error('Could not extract transcript. The video might not have captions.');
-            }
-
-            const transcriptText = parseSRT(srtContent);
-            
-            if (!transcriptText || transcriptText.trim().length === 0) {
-                throw new Error('Transcript was empty after parsing.');
-            }
-
-            return transcriptText;
-        }
-
+        // ============================================
+        // MAIN FUNCTIONS
+        // ============================================
         async function generateFromUrl() {
-            const anthropicKey = document.getElementById('anthropicKey').value.trim();
-            const rapidApiKey = document.getElementById('rapidApiKey').value.trim();
             const youtubeUrl = document.getElementById('youtubeUrl').value.trim();
             const language = document.getElementById('languageUrl').value;
+            const password = getPassword();
             
             clearResults();
-            
-            if (!anthropicKey) {
-                showError('Please enter your Anthropic API key.');
-                return;
-            }
-            
-            if (!rapidApiKey) {
-                showError('Please enter your RapidAPI key.');
-                return;
-            }
             
             if (!youtubeUrl) {
                 showError('Please enter a YouTube URL.');
@@ -642,22 +643,33 @@
                 return;
             }
             
-            sessionStorage.setItem('anthropic_api_key', anthropicKey);
-            sessionStorage.setItem('rapidapi_key', rapidApiKey);
-            
             document.getElementById('loading').style.display = 'block';
             document.getElementById('loading').textContent = '⏳ Fetching transcript from YouTube...';
             document.getElementById('generateFromUrlBtn').disabled = true;
             
             try {
-                const transcript = await fetchTranscript(videoId, rapidApiKey);
+                // Step 1: Fetch transcript
+                const transcriptResponse = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'fetch-transcript',
+                        password: password,
+                        videoId: videoId
+                    })
+                });
                 
-                if (!transcript) {
-                    throw new Error('No transcript found for this video.');
+                const transcriptData = await transcriptResponse.json();
+                
+                if (!transcriptResponse.ok) {
+                    throw new Error(transcriptData.error || 'Failed to fetch transcript');
                 }
-
+                
+                const transcript = transcriptData.transcript;
+                
+                // Step 2: Generate recipe
                 document.getElementById('loading').textContent = '⏳ Claude is creating your recipe...';
-                await generateRecipe(transcript, anthropicKey, language);
+                await generateRecipe(transcript, language, password);
                 
             } catch (error) {
                 showError(`Error: ${error.message}`);
@@ -668,30 +680,23 @@
         }
 
         async function generateFromTranscript() {
-            const anthropicKey = document.getElementById('anthropicKey').value.trim();
             const transcript = document.getElementById('transcript').value.trim();
             const language = document.getElementById('languageManual').value;
+            const password = getPassword();
             
             clearResults();
-            
-            if (!anthropicKey) {
-                showError('Please enter your Anthropic API key.');
-                return;
-            }
             
             if (!transcript) {
                 showError('Please paste a YouTube transcript.');
                 return;
             }
             
-            sessionStorage.setItem('anthropic_api_key', anthropicKey);
-            
             document.getElementById('loading').style.display = 'block';
             document.getElementById('loading').textContent = '⏳ Claude is creating your recipe...';
             document.getElementById('generateFromTextBtn').disabled = true;
             
             try {
-                await generateRecipe(transcript, anthropicKey, language);
+                await generateRecipe(transcript, language, password);
             } catch (error) {
                 showError(`Error: ${error.message}`);
             } finally {
@@ -700,155 +705,31 @@
             }
         }
 
-        // ============================================
-        // TWO-STEP RECIPE GENERATION
-        // ============================================
-        async function generateRecipe(transcript, anthropicKey, language) {
-            console.log('Selected language:', language);
-            
-            // Step 1: Generate recipe in English
-            const englishRecipe = await generateEnglishRecipe(transcript, anthropicKey);
-            
-            // Step 2: Translate if needed
-            if (language !== 'english') {
-                console.log('Translating recipe to', language);
-                document.getElementById('loading').textContent = `⏳ Translating recipe to ${getLanguageMap()[language]}...`;
-                const translatedRecipe = await translateRecipe(englishRecipe, anthropicKey, language);
-                
-                document.getElementById('result').textContent = translatedRecipe;
-                document.getElementById('resultSection').classList.add('visible');
-                return;
-            }
-            
-            // Show English result
-            document.getElementById('result').textContent = englishRecipe;
-            document.getElementById('resultSection').classList.add('visible');
-        }
-
-        async function generateEnglishRecipe(transcript, anthropicKey) {
+        async function generateRecipe(transcript, language, password) {
             const response = await fetch(WORKER_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': anthropicKey,
-                    'anthropic-version': '2023-06-01'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: 'claude-sonnet-4-20250514',
-                    max_tokens: 4000,
-                    messages: [{
-                        role: 'user',
-                        content: `You are a recipe extraction expert. Extract and format this recipe in markdown for Obsidian.
-
-EXACT FORMAT:
-
-# [Recipe Name]
-For [X servings/portions]
-## Ingredients
-**Prep Time:** [X minutes]
-**Cook Time:** [X minutes]
-- [ingredient with measurements]
-
-## Directions
-1. [Step in detail]
-2. [Step in detail]
-
-MEASUREMENT RULES:
-- Convert lbs to grams (1 lb = 454g)
-- Convert oz to grams (1 oz = 28g)
-- Convert fl oz to ml (1 fl oz = 30ml)
-- Convert inches to cm (1 inch = 2.54cm)
-- KEEP cups, Tbsp, tsp unchanged
-- When both provided: "2 cups (300g) flour"
-
-CONTENT RULES:
-- Extract prep/cook time if mentioned
-- Integrate tips naturally into steps
-- Add "Personal Note:" for extra tips at end
-- Estimate servings if not mentioned
-- Use friendly, instructional tone
-
-TRANSCRIPT:
-
-${transcript}`
-                    }]
+                    action: 'generate-recipe',
+                    password: password,
+                    transcript: transcript,
+                    language: language
                 })
             });
             
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error?.message || `API Error: ${response.status}`);
-            }
-            
             const data = await response.json();
-            return data.content[0].text;
-        }
-
-        async function translateRecipe(englishRecipe, anthropicKey, targetLanguage) {
-            const languageName = getLanguageMap()[targetLanguage];
-            
-            const response = await fetch('https://recipe-agent-proxy.francisco-diazmo.workers.dev', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': anthropicKey,
-                    'anthropic-version': '2023-06-01'
-                },
-                body: JSON.stringify({
-                    model: 'claude-sonnet-4-20250514',
-                    max_tokens: 4000,
-                    messages: [{
-                        role: 'user',
-                        content: `Translate this recipe to ${languageName}.
-
-CRITICAL RULES:
-1. Translate EVERYTHING to ${languageName}: title, headers, ingredients, instructions
-2. Keep markdown formatting: #, ##, -, numbers, **
-3. DO NOT translate: g, ml, cm, cups, Tbsp, tsp
-4. DO NOT change numbers: "2 cups (300g)" stays "2 cups (300g)"
-5. Use natural ${languageName} phrasing
-6. Translate "Prep Time", "Cook Time", "Personal Note"
-7. Translate "For X servings"
-
-EXAMPLE FOR SPANISH:
-"# Perfect Pancakes" → "# Panqueques Perfectos"
-"## Ingredients" → "## Ingredientes"
-"- 2 cups (300g) all-purpose flour" → "- 2 cups (300g) de harina para todo uso"
-
-RECIPE TO TRANSLATE:
-
-${englishRecipe}`
-                    }]
-                })
-            });
             
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error?.message || `Translation Error: ${response.status}`);
+                throw new Error(data.error || 'Failed to generate recipe');
             }
             
-            const data = await response.json();
-            return data.content[0].text;
+            document.getElementById('result').textContent = data.recipe;
+            document.getElementById('resultSection').classList.add('visible');
         }
         
-        function showError(message) {
-            const errorDiv = document.getElementById('error');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-        }
-        
-        function copyToClipboard() {
-            const result = document.getElementById('result').textContent;
-            navigator.clipboard.writeText(result).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = '✓ Copied!';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                }, 2000);
-            });
-        }
-        
+        // ============================================
+        // KEYBOARD SHORTCUTS
+        // ============================================
         document.getElementById('transcript').addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'Enter') {
                 generateFromTranscript();
